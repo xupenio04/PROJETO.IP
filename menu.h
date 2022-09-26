@@ -1,8 +1,8 @@
 #ifndef MENU
 #define MENU
 
-#include "raylib.h"
-#include <stdio.h>
-
+void sair_jogo();
+void mostrar_menu();
+void carregar_jogo();
 
 #endif
