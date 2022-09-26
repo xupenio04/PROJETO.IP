@@ -11,7 +11,7 @@ typedef struct{
     int ataque;
     int defesa;
     Vector2 posicao;
-    Texture2D jogador;   
+    Texture2D textura;   
 }player;
 
 
