@@ -1,5 +1,6 @@
 #ifndef ENEMIES
 #define ENEMIES
+#include "raylib.h"
 
 typedef struct{
   bool active;
