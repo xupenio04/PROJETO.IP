@@ -18,6 +18,7 @@ typedef struct{
     float Height;
     float Temp;
     float FrameSpeed;
+    int Life;
 } Player;
 
 
