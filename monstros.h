@@ -17,4 +17,4 @@ typedef struct{
 
 float enemyColisao(Rectangle enemy, Rectangle player);
 
-#endif ENEMIES
+#endif
