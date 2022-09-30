@@ -6,13 +6,19 @@
 #include<math.h>
 #include<stdlib.h>
 
+
 typedef struct{
-    int vida;
-    int ataque;
-    int defesa;
-    Vector2 posicao;
-    Texture2D textura;   
-}player;
+    Rectangle FrameRec;
+    Rectangle Collision;
+    Texture2D Img;
+    Vector2 Position;
+    int MaxFrame;
+    int CurrentFrame;
+    float Width;
+    float Height;
+    float Temp;
+    float FrameSpeed;
+} Player;
 
 
 
