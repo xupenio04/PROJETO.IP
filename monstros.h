@@ -14,6 +14,7 @@ typedef struct{
   float Height;
   float Temp;
   float FrameSpeed;
+  int Life;
 } Enemy;
 
 float enemyColisao(Rectangle enemy, Rectangle player);
