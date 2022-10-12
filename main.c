@@ -86,22 +86,22 @@ int main(){
     int acabou = 0;
 
     //carregando telas inicial, menu, mapa e preta
-    Texture2D telaInicial = LoadTexture("pasta/telaInicial.png");
-    Texture2D telaMenu = LoadTexture("pasta/telaMenu.png");
-    Texture2D mapa = LoadTexture("pasta/mapaa.png");
-    Texture2D telaPreta = LoadTexture("pasta/telaPreta.png");
+    Texture2D telaInicial = LoadTexture("assets/image/telaInicial.png");
+    Texture2D telaMenu = LoadTexture("assets/image/telaMenu.png");
+    Texture2D mapa = LoadTexture("assets/image/mapa.png");
+    Texture2D telaPreta = LoadTexture("assets/image/telaPreta.png");
 
     //carregando botão start(iluminado)/start1(botao da tela)
     Texture2D start1;
-    Rectangle button_start1 = botao_start("pasta/botao_start1.png", &start1);
+    Rectangle button_start1 = botao_start("assets/image/botao_start1.png", &start1);
     Texture2D start;
-    Rectangle button_start = botao_start("pasta/botao_start.png", &start);
+    Rectangle button_start = botao_start("assets/image/botao_start.png", &start);
 
     //carregando botão menu(iluminado)/menu1(botao da tela)
     Texture2D menu;
-    Rectangle button_menu = botao_menu("pasta/botao_menu.png", &menu);
+    Rectangle button_menu = botao_menu("assets/image/botao_menu.png", &menu);
     Texture2D menu1;
-    Rectangle button_menu1 = botao_menu("pasta/botao_menu1.png", &menu1);
+    Rectangle button_menu1 = botao_menu("assets/image/botao_menu1.png", &menu1);
 
     //checando os botões para start e menu
     int click_start = 0;
