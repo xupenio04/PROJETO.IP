@@ -175,6 +175,7 @@ void terminar(){
     UnloadTexture(boss.Img);
     UnloadTexture(enemie.Img);
     UnloadTexture(monstro.Img);
+    UnloadTexture(gameover);
     
     UnloadTexture(imglife);
 
