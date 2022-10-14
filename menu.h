@@ -180,6 +180,7 @@ void terminar(){
     UnloadTexture(enemie.Img);
     UnloadTexture(monstro.Img);
     UnloadTexture(gameover);
+    UnloadTexture(gamewin);
     
     UnloadTexture(imglife);
 
