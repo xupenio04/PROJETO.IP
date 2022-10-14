@@ -94,8 +94,8 @@ void carregarTelas(){
     mapa = carregarTela("assets/mapa.png");
     telaPreta = carregarTela("assets/telaPreta.png");
     pause = carregarTela("assets/pause.png");
-    gameover= carregartela("assets/gameover.png);
-    gamewin= carregartela("asstes/gamewin2.png);                       
+    gameover= carregartela("assets/gameovernew.png);
+    gamewin= carregartela("asstes/gamewinnew.png);                       
 }
 void carregarVida(){
     Image img_life = LoadImage("assets/vida.png");
