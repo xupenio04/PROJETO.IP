@@ -8,6 +8,8 @@ int click_menu = 0;
 
 int stopTelaInicial = 0;
 int jogo_pausado = 0;
+int tela_gameover=0;
+int tela_gamewin=0;
 
 Sound botao_jogo;
 Sound audio_espada;
