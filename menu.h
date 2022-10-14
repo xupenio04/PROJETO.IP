@@ -24,7 +24,7 @@ Texture2D telaPreta;
 Texture2D pause;
 Texture2D imglife;
 Texture2D gameover;
-Texture2D gamewin2;
+Texture2D gamewin;
 
 Texture2D start1;
 Rectangle button_start1;
@@ -94,8 +94,8 @@ void carregarTelas(){
     mapa = carregarTela("assets/mapa.png");
     telaPreta = carregarTela("assets/telaPreta.png");
     pause = carregarTela("assets/pause.png");
-    gameover= carregartela("assets/gameovernew.png");
-    gamewin= carregartela("assets/gamewinnew.png");                      
+    gameover= carregarTela("assets/gameovernew.png");
+    gamewin= carregarTela("assets/gamewinnew.png");                      
 }
 void carregarVida(){
     Image img_life = LoadImage("assets/vida.png");
