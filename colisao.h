@@ -2,72 +2,38 @@
 #define COLISAO
 
 #include "raylib.h"
-#include "colisao.h"
-#include "player.h"
-#include "enemies.h"
 
 typedef struct{
     Texture2D Img;
     Vector2 Position;
     Rectangle Collision;
-    int cura;
+    float cura;
 } Coxinhas;
 
-bool flagcollisionPlayerMonstro = false;
-bool flagcollisionPlayerboss = false;
-bool flagcollisionPlayerEnemy = false;
-bool ataqueConfirmado = false; //player ataca boss
-bool ataqueEnemy = false;//player ataca enemy
-bool ataqueBoss = false; //boss ataca player
-bool contrario =  false; //se o boss tiver ao contrario
-bool enemyAtaca = false; //quando o enemy ataca
-bool ataqueMonstro = false; //player ataca monstro do oculos
-bool monstroAtaca = false; //monstro do oculos ataca
-bool coxinha = false;
+extern bool flagcollisionPlayerMonstro;
+extern bool flagcollisionPlayerboss;
+extern bool flagcollisionPlayerEnemy;
+extern bool flagcollisionPlayerVoador;
+extern bool ataqueConfirmado; //player ataca boss
+extern bool ataqueEnemy;//player ataca enemy
+extern bool ataqueBoss; //boss ataca player
+extern bool contrario; //se o boss tiver ao contrario
+extern bool enemyAtaca; //quando o enemy ataca
+extern bool ataqueMonstro; //player ataca monstro do oculos
+extern bool monstroAtaca; //monstro do oculos ataca
+extern bool ataqueVoador; //player ataca voador 
+extern bool voadorAtaca; 
+extern bool coxinha;
 
-Rectangle collisionPlayerboss;
-Rectangle collisionPlayerEnemy;
-Rectangle collisionPlayerMonstro;
+extern Rectangle collisionPlayerboss;
+extern Rectangle collisionPlayerEnemy;
+extern Rectangle collisionPlayerMonstro;
 
-int nCoxinhas = 3;
-void checaColisao(){
-     player.Temp += GetFrameTime();
-    player.CurrentFrame = player.CurrentFrame % 4;
-    player.Collision = (Rectangle) {player.Position.x, player.Position.y, 90.0, 102.0}; //CONSEGUI ESSES VALORES NO PISKEL, OLHANDO A IMAGEM
-    boss.Collision = (Rectangle) {boss.Position.x, boss.Position.y, 160.0, 139.0};
-    enemie.Collision = (Rectangle) {enemie.Position.x, enemie.Position.y, 90.0, 102.0};
-    monstro.Collision = (Rectangle) {monstro.Position.x, monstro.Position.y, 70.0, 80.0};
-    flagcollisionPlayerMonstro = CheckCollisionRecs(monstro.Collision, player.Collision);
-    flagcollisionPlayerboss  = CheckCollisionRecs(boss.Collision, player.Collision);
-    flagcollisionPlayerEnemy = CheckCollisionRecs(enemie.Collision, player.Collision);
 
-    if(flagcollisionPlayerboss){
-        //Colorboss = RED;
-        //ColorPlayer = RED;
-        ataqueConfirmado = true;
-        collisionPlayerboss = GetCollisionRec(boss.Collision, player.Collision);
-    }
-    if(flagcollisionPlayerEnemy){
-        ataqueEnemy = true;
-        collisionPlayerEnemy = GetCollisionRec(enemie.Collision, player.Collision);
-    }
-    if(!flagcollisionPlayerboss){
-        Colorboss = RAYWHITE; 
-        ataqueConfirmado = false;
-    }
-    if(!flagcollisionPlayerEnemy){
-        ColorEnemy = RAYWHITE;
-        ataqueEnemy = false;
-    }
-    if(flagcollisionPlayerMonstro){
-        ataqueMonstro = true;
-        collisionPlayerMonstro = GetCollisionRec(monstro.Collision, player.Collision);
-    }
-    else if(!flagcollisionPlayerMonstro){
-        ColorMonstro = RAYWHITE;
-        ataqueMonstro = false;
-    }
+extern int nCoxinhas;
+//extern Coxinhas coxinhas[nCoxinhas];
 
-}
-
+void checaColisao();
+//void checaCoxinhas();
+void terminarPersonagens();
 #endif
