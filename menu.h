@@ -3,198 +3,66 @@
 
 #include"raylib.h"
 
-int click_start = 0;
-int click_menu = 0;
+extern int click_start;
+extern int click_menu;
 
-int stopTelaInicial = 0;
-int jogo_pausado = 0;
-int tela_gameover=1;
-int tela_gamewin=1;
+extern int stopTelaInicial;
+extern int jogo_pausado;
+extern int tela_gameover;
+extern int tela_gamewin;
 
-Sound botao_jogo;
-Sound audio_espada;
-Sound audio_boss;
-Sound audio_battle;
-Music audio_menu;
+extern Sound botao_jogo;
+extern Sound audio_espada;
+extern Sound audio_boss;
+extern Sound audio_battle;
+extern Music audio_menu;
 
-Texture2D telaInicial;
-Texture2D telaMenu;
-Texture2D mapa;
-Texture2D telaPreta;
-Texture2D pause;
-Texture2D imglife;
-Texture2D gameover;
-Texture2D gamewin;
+extern Texture2D telaInicial;
+extern Texture2D telaMenu;
+extern Texture2D mapa;
+extern Texture2D telaPreta;
+extern Texture2D pause;
+extern Texture2D imglife;
+extern Texture2D gameOver;
+extern Texture2D gameWin;
+extern Image fundoMapa;
 
-Texture2D start1;
-Rectangle button_start1;
-Texture2D start;
-Rectangle button_start;
+extern Texture2D start1;
+extern Rectangle button_start1;
+extern Texture2D start;
+extern Rectangle button_start;
 
-Texture2D menu;
-Rectangle button_menu;
-Texture2D menu1;
-Rectangle button_menu1;
+extern Texture2D menu;
+extern Rectangle button_menu;
+extern Texture2D menu1;
+extern Rectangle button_menu1;
 
-Vector2 mouse_move;
-Rectangle mouse;
+extern Vector2 mouse_move;
+extern Rectangle mouse;
 
-float lifeHeight = 100.0;
-float lifeWidth = 600.0;
-Vector2 posicaoVida = {20,20};
-Rectangle rec = { 0 };
-int currentLife = 0;
+extern float lifeHeight;
+extern float lifeWidth;
+extern Vector2 posicaoVida;
+extern Rectangle rec;
+extern int currentLife;
 
-void iniciarJogo(){
-    InitWindow(GetScreenWidth(), GetScreenHeight(), "GAME");
-    ToggleFullscreen();
-    SetTargetFPS(60);
-    InitAudioDevice();
-  
-    botao_jogo = LoadSound("sounds/botao.mp3");
-    audio_espada = LoadSound("sounds/espada.mp3");
-    audio_boss = LoadSound("sounds/boss.mp3");
-    audio_battle = LoadSound("sounds/battle.mp3");
-    audio_menu = LoadMusicStream("sounds/menu.mp3");
-    PlayMusicStream(audio_menu);
-}
-Rectangle botao_start(char path[], Texture2D *start){
-    Image image_start = LoadImage(path);
-    ImageResize(&image_start, 355, 145);
-    (*start) = LoadTextureFromImage(image_start);
-    Rectangle button_start = {1020, 660, start -> width, start -> height};
-    UnloadImage(image_start);
 
-    return button_start;
-}
-Rectangle botao_menu(char path[], Texture2D *menu){
-    Image image_menu = LoadImage(path);
-    ImageResize(&image_menu, 355, 145);
-    (*menu) = LoadTextureFromImage(image_menu);
-    Rectangle button_menu = {515,  660, menu -> width, menu -> height};
-    UnloadImage(image_menu);
-
-    return button_menu;
-}
-void carregar_jogo(){
-    char intro_game[] = "Parabéns, você é o mais novo aprovado no curso de engenharia da computação do CIN-UFPE.\n                      Entretanto, seus tempos de glória chegaram ao fim.";
-    DrawText(intro_game, 210, 500, 30, WHITE);
-}
-Texture2D carregarTela(char path[]){
-    Image img = LoadImage(path);
-    ImageResize(&img, GetScreenWidth(), GetScreenHeight());
-    Texture2D tela = (Texture2D) LoadTextureFromImage(img);
-    UnloadImage(img);
-
-    return tela;
-}
-void carregarTelas(){
-    telaMenu = carregarTela("assets/telaMenu.png");
-    telaInicial = carregarTela("assets/telaInicial.png");
-    mapa = carregarTela("assets/mapa.png");
-    telaPreta = carregarTela("assets/telaPreta.png");
-    pause = carregarTela("assets/pause.png");
-    gameover= carregarTela("assets/gameovernew.png");
-    gamewin= carregarTela("assets/gamewinnew.png");                      
-}
-void carregarVida(){
-    Image img_life = LoadImage("assets/vida.png");
-    imglife = (Texture2D) LoadTextureFromImage(img_life);
-    UnloadImage(img_life);
-
-}
-void abrirTelaInicial(){
-    ClearBackground(RAYWHITE);
-    DrawTexture(telaInicial, 0, 0, WHITE);
-    DrawTexture(start1, button_start1.x, button_start1.y, WHITE);
-    DrawTexture(menu1, button_menu1.x, button_menu1.y, WHITE);
-    StopSound(audio_battle);
-    PlayMusicStream(audio_menu);
-
-}
-void carregarBotoes(){
-    //carregando botão start(iluminado)/start1(botao da tela)
-    button_start1 = botao_start("assets/botao_start1.png", &start1);
-    button_start = botao_start("assets/botao_start.png", &start);
-
-    //carregando botão menu(iluminado)/menu1(botao da tela)
-    button_menu = botao_menu("assets/botao_menu.png", &menu);
-    button_menu1 = botao_menu("assets/botao_menu1.png", &menu1);
-}
-void checaBotao(){
-    // checando se o mouse bateu em algum dos botões
-    if(CheckCollisionRecs(button_start, mouse)){
-        DrawTexture(start, button_start.x, button_start.y, WHITE);
-        click_start = 1;
-        PlaySound(botao_jogo);
-
-    }else click_start = 0;
-
-    if(CheckCollisionRecs(button_menu,mouse)) {
-        DrawTexture(menu, button_menu.x, button_menu.y, WHITE);
-        click_menu = 1; 
-        PlaySound(botao_jogo);
-        
-    }else click_menu = 0;
-}
-void abreMenu(){
-    stopTelaInicial = 1;
-    UpdateMusicStream(audio_menu);
-    while(stopTelaInicial){
-        UpdateMusicStream(audio_menu);
-        BeginDrawing();
-            ClearBackground(BLACK);
-            DrawTexture(telaMenu, 0, 0, WHITE); 
-            if(IsKeyPressed(KEY_SPACE)) stopTelaInicial = 0; //volta p telaInicial
-        EndDrawing();
-    }
-}
-void abrePreJogo(){
-    stopTelaInicial = 1;
-    StopMusicStream(audio_menu);
-    PlaySound(audio_battle);
-    //intro do jogo
-    BeginDrawing();
-        ClearBackground(RAYWHITE);
-        DrawTexture(telaPreta, 0, 0, WHITE);
-        carregar_jogo();
-    EndDrawing();
-    WaitTime(3); //delay
-}
-Image carregarFundoMapa(){
-    Image imageFundo = LoadImage("assets/fundo_mapa.png");
-    ImageResize(&imageFundo, GetScreenWidth(), GetScreenHeight());
-    return imageFundo;
-}
-void terminar(){
-    UnloadTexture(telaInicial);
-    UnloadTexture(telaMenu);
-    UnloadTexture(mapa);
-    UnloadTexture(telaPreta);
-    UnloadTexture(pause);
-    UnloadTexture(start);
-    UnloadTexture(start1);
-    UnloadTexture(menu);
-    UnloadTexture(menu1);
-
-    UnloadTexture(player.Img);
-    UnloadTexture(boss.Img);
-    UnloadTexture(enemie.Img);
-    UnloadTexture(monstro.Img);
-    UnloadTexture(gameover);
-    UnloadTexture(gamewin);
-    
-    UnloadTexture(imglife);
-
-    UnloadSound(botao_jogo);
-    UnloadSound(audio_espada);
-    UnloadSound(audio_battle);
-    UnloadMusicStream(audio_menu);
-    UnloadSound(audio_boss);
-    
-    CloseAudioDevice();
-    CloseWindow();
-}
+void iniciarJogo();
+Rectangle botao_start(char path[], Texture2D *start);
+Rectangle botao_menu(char path[], Texture2D *menu);
+void carregar_jogo();
+Texture2D carregarTela(char path[]);
+void carregarTelas();
+void carregarVida();
+void abrirTelaInicial();
+void carregarBotoes();
+void checaBotao();
+void abreMenu();
+void abrePreJogo();
+void carregarFundoMapa();
+void paused();
+void gameover();
+void gamewin();
+void terminar();
 
 #endif
-
