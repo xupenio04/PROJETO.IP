@@ -1,9 +1,10 @@
 #include <stdio.h>
+#include <string.h> 
 #include "raylib.h"
-#include "player.h"
-#include "enemies.h"
 #include "menu.h"
 #include "colisao.h"
+#include "player.h"
+#include "enemies.h"
 
 int main(){
     iniciarJogo();
@@ -11,16 +12,26 @@ int main(){
     iniciarBoss();
     iniciarEnemie();
     iniciarMonstro();
-    Coxinhas coxinhas[nCoxinhas];
-    for(int i = 0; i < nCoxinhas; i++){
-        coxinhas[i].Img = (Texture2D) LoadTexture("assets/coxinha.png");
-        coxinhas[i].Position = (Vector2) {300.0 + i*230.0, 300.0 + i*15.0};
-        coxinhas[i].Collision = (Rectangle) {coxinhas[i].Position.x, coxinhas[i].Position.y, coxinhas[i].Img.width - 40, coxinhas[i].Img.height - 40 };
-        coxinhas[i].cura = 20;
-    }
+    iniciarVoador();
     carregarTelas();
     carregarVida();
     carregarBotoes();
+    carregarFundoMapa();
+
+    Coxinhas coxinhas[nCoxinhas];
+    for(int i = 0; i < nCoxinhas; i++){
+        coxinhas[i].Img = (Texture2D) LoadTexture("assets/coxinha.png");
+
+        if(i==0) coxinhas[i].Position = (Vector2) {1200.0, 775.0};
+        else if(i == 1) coxinhas[i].Position = (Vector2) {1500.0, 735.0};
+        else if(i==2) coxinhas[i].Position = (Vector2) {1200.0, 260.0};
+        else if(i==3) coxinhas[i].Position = (Vector2) {364.0, 788.0};
+        else if(i==4) coxinhas[i].Position = (Vector2) {320.0, 280.0};
+        else if(i==5) coxinhas[i].Position = (Vector2) {556.0, 450.0};
+
+        coxinhas[i].Collision = (Rectangle) {coxinhas[i].Position.x, coxinhas[i].Position.y, coxinhas[i].Img.width - 40, coxinhas[i].Img.height - 40 };
+        coxinhas[i].cura = 40;
+    }
 
     while(!WindowShouldClose()){
         UpdateMusicStream(audio_menu);
@@ -31,146 +42,151 @@ int main(){
 
         BeginDrawing();
             //abrindo tela inicial
-            if(!stopTelaInicial) abrirTelaInicial();
+            if(!stopTelaInicial) {
+                abrirTelaInicial();
+            }
             checaBotao();
         EndDrawing();
 
         //abrindo Menu
-        if(click_menu && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
-            abreMenu();
-        }
-
+        if(click_menu && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) abreMenu();
         //abrindo jogo
-        if(click_start && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
-            abrePreJogo();
-        }
-
+        if(click_start && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) abrePreJogo();
+        
+    
         //mapa do jogo
-        while(stopTelaInicial && !jogo_pausado){
+        while(stopTelaInicial && !jogo_pausado && !tela_gameover && !tela_gamewin){
             BeginDrawing();
                 ClearBackground(BLACK);
                 DrawTexture(mapa, 0, 0, WHITE); 
+
+                ColorPlayer = RAYWHITE;
+                if(player.Vida > 120.0) player.Vida = 120.0;
 
                 if(acabou == 1){
                     ataque = 0;
                     CurrentFrameAtaq = 4; //comecando um antes por causa da incrementacao
                 }
-                
-                checkTeclaPressionada(carregarFundoMapa());
-                
-                ///aqui vamos checar se o player passou pelas coxinhas
+
+                checkTeclaPressionada(); //checa movimento do player
+                //checaCoxinhas(); //checa se player passou pelas coxinhas
                 for(int i = 0; i < nCoxinhas; i++){
                     coxinha = CheckCollisionRecs(coxinhas[i].Collision, player.Collision);
-                    if(coxinha){ //&& abs(player.Position.x - coxinhas[i].Position.x) < 20 && abs(player.Position.x - coxinhas[i].Position.y) < 20){
-                    if(player.Vida <= 100){
-                        player.Vida += coxinhas[i].cura;
-                    }
-                    coxinhas[i].Position = (Vector2) {10000.0, 10000.0};
-                    coxinhas[i].Collision = (Rectangle) {10000.0, 10000.0, 1.0, 1.0};
-                    UnloadTexture(coxinhas[i].Img);
+                    if(coxinha){ 
+                        if(player.Vida <= 120){
+                            player.Vida += coxinhas[i].cura;
+                        }
+                        coxinhas[i].Position = (Vector2) {10000.0, 10000.0};
+                        coxinhas[i].Collision = (Rectangle) {10000.0, 10000.0, 1.0, 1.0};
+                        UnloadTexture(coxinhas[i].Img);
                     }
                 }
-
-                checaColisao();
+                checaColisao(); //checa colisoes
 
                 int thresholdWidth = player.Position.x;
                 int thresholdHeight = player.Position.y;
 
+                //---------monstro
                 if(monstro.Position.x > thresholdWidth ){
-                    monstro.Position.x -= 2.0;
+                    monstro.Position.x -= 1.8;
                     if(monstro.Width > 0){
                         monstro.Width *= -1;
                     }
                     } else if(monstro.Position.x < thresholdWidth){ 
-                        monstro.Position.x += 2.0;
+                        monstro.Position.x += 1.8;
                         if(monstro.Width < 0){
                         monstro.Width *= -1;
                         } 
                     } 
 
                     if(monstro.Position.y > thresholdHeight){
-                    monstro.Position.y -= 2.0;
+                    monstro.Position.y -= 1.8;
                     } else if(monstro.Position.y < thresholdHeight) {
-                        monstro.Position.y += 2.0;
+                        monstro.Position.y += 1.8;
                     }
                     if(monstro.Position.x == thresholdWidth && monstro.Position.y == thresholdHeight){
                     monstroAtaca = true;
                     estadoMonstro = 3;
                 }
-                //agora e so repetir o codigo do monstro para o enemie
+
+                //---------enemie
                 if(enemie.Position.x > thresholdWidth ){
-                    enemie.Position.x -= 2.0;
+                    enemie.Position.x -= 1.0;
                     if(enemie.Width > 0){
                         enemie.Width *= -1;
                     }
                 } else if(enemie.Position.x < thresholdWidth){ 
-                    enemie.Position.x += 2.0;
+                    enemie.Position.x += 1.0;
                     if(enemie.Width < 0){
                         enemie.Width *= -1;
                     } 
                 } 
 
                 if(enemie.Position.y > thresholdHeight){
-                    enemie.Position.y -= 2.0;
+                    enemie.Position.y -= 1.0;
                 } else if(enemie.Position.y < thresholdHeight) {
-                    enemie.Position.y += 2.0;
+                    enemie.Position.y += 1.0;
                 }
                 if(enemie.Position.x == thresholdWidth && enemie.Position.y == thresholdHeight){
                     enemyAtaca = true;
                     estadoEnemy = 4;
                 }
 
-                ///comeca o do boss///////////////////////////////////////////////////////
-    
-                /*
-                if(!contrario){
-                thresholdWidth = player.Position.x - 100; //pra ele poder ficar na frente do player, muda qd ele ta ao contrario
-                thresholdHeight = player.Position.y - 70;
+                //---------voador
+                if(voador.Position.x > thresholdWidth ){
+                    voador.Position.x -= 2.5;
+                    if(voador.Width > 0){
+                        voador.Width *= -1;
+                    }
+                } else if(voador.Position.x < thresholdWidth){ 
+                    voador.Position.x += 2.5;
+                    if(voador.Width < 0){
+                      voador.Width *= -1;
+                    } 
+                } 
+
+                if(voador.Position.y > thresholdHeight){
+                  voador.Position.y -= 2.5;
+                } else if(voador.Position.y < thresholdHeight) {
+                    voador.Position.y += 2.5;
                 }
-                else if(contrario){
-                thresholdWidth = player.Position.x + 40;
-                thresholdHeight = player.Position.y - 70;
-                }*/
-    
+                if(voador.Position.x == thresholdWidth && voador.Position.y == thresholdHeight){
+                  voadorAtaca = true;
+                  estadoVoador = 2;
+                }
+
+                //-------------boss
                 if(boss.Position.x > thresholdWidth){
-                boss.Position.x -= 1;
+                    boss.Position.x -= 0.5;
                     if(boss.Width > 0){
                     boss.Width *= -1;
                     contrario = !contrario;
                     }
                 } 
                 else if(boss.Position.x < thresholdWidth) { 
-                boss.Position.x += 1;
-                if(boss.Width < 0){
-                    boss.Width *= -1;
-                    contrario = !contrario;
-                } 
+                    boss.Position.x += 0.5;
+                    if(boss.Width < 0){
+                        boss.Width *= -1;
+                        contrario = !contrario;
+                    } 
                 }
 
     
                 if(boss.Position.y > thresholdHeight){
-                boss.Position.y -= 1.0;
+                boss.Position.y -= 0.5;
                 } else if(boss.Position.y < thresholdHeight) {
-                    boss.Position.y += 1.0;
+                    boss.Position.y += 0.5;
                 }
                 
                 if(boss.Position.x == thresholdWidth && boss.Position.y == thresholdHeight){
-                //boss.CurrentFrame = 6; 
-                ataqueBoss = true;
-                
+                    //boss.CurrentFrame = 6; 
+                    ataqueBoss = true;
                 }
-
-    
-                BeginDrawing();
-                ClearBackground(RAYWHITE);
-                DrawTexture(mapa, 0, 0, RAYWHITE);
                     
                 for(int i = 0; i < nCoxinhas; i++){
                     DrawTexture(coxinhas[i].Img, coxinhas[i].Position.x, coxinhas[i].Position.y, RAYWHITE);
-                    
                 }  
   
-    
                 boss.Temp += GetFrameTime();
                 if(!ataqueBoss){
                     if(boss.Temp > boss.FrameSpeed){
@@ -199,16 +215,16 @@ int main(){
                     }
                     else if(contrario){
                         if(boss.Temp > boss.FrameSpeed){
-                        boss.CurrentFrameAtaq -= 1;
-                        boss.Temp = 0; //se tiver o contrario o ataque precisa percorrer ao contrario a imagem
+                            boss.CurrentFrameAtaq -= 1;
+                            boss.Temp = 0; //se tiver o contrario o ataque precisa percorrer ao contrario a imagem
                         }
                         if(boss.CurrentFrameAtaq < 0){
-                        boss.CurrentFrameAtaq = 6;
-                        ataqueBoss = false;
+                            boss.CurrentFrameAtaq = 6;
+                            ataqueBoss = false;
                         }
                     }
                 }
-    
+
     
                 if(ataqueBoss){
                     player.Vida -= 0.5;
@@ -225,26 +241,27 @@ int main(){
                 DrawTextureRec(boss.Img, boss.FrameRec, boss.Position, Colorboss);    
   
                 if(boss.Vida <= 0){
+                    ataqueBoss = false;
                     estadoBoss = 3;
                     boss.Temp = 0;
                     boss.CurrentFrame = 0;
                     //boss.FrameSpeed = 8;
                     while(boss.CurrentFrame !=5){
-                    boss.Temp += GetFrameTime();
-                    if(boss.Temp > boss.FrameSpeed){
-                        boss.Temp = 0;
-                        boss.CurrentFrame += 1;
-                
-                    }
-                    boss.FrameRec = (Rectangle) {boss.Width *  boss.CurrentFrame, boss.Height * estadoBoss, boss.Width, boss.Height};
-                    DrawTextureRec(boss.Img, boss.FrameRec, boss.Position, Colorboss); 
-                    //WaitTime(10);
+                        boss.Temp += GetFrameTime();
+                        if(boss.Temp > boss.FrameSpeed){
+                            boss.Temp = 0;
+                            boss.CurrentFrame += 1;
+                        }
+                        boss.FrameRec = (Rectangle) {boss.Width *  boss.CurrentFrame, boss.Height * estadoBoss, boss.Width, boss.Height};
+                        DrawTextureRec(boss.Img, boss.FrameRec, boss.Position, Colorboss); 
+                        //WaitTime(10);
                     }
                     boss.Position = (Vector2) {12000.0, 12000.0};
                     boss.Collision = (Rectangle) {12000.0, 12000.0, 1.0, 1.0};
+                    bossMorreu = true;
+                    ColorPlayer = RAYWHITE;
                     //UnloadTexture(boss.Img);
-                }
-    
+                }   
     
                 ///aqui comeca as coisas do enemy 
                 enemie.Temp += GetFrameTime();
@@ -311,14 +328,49 @@ int main(){
                 } 
 
 
+                voador.Temp += GetFrameTime();
+                if(!voadorAtaca){
+                  if(voador.Temp > voador.FrameSpeed){
+                    voador.Temp = 0;
+                    voador.CurrentFrame += 1;
+                  }
+                }
+                else if(voadorAtaca){
+                  if(voador.Temp > voador.FrameSpeed){
+                    voador.Temp = 0;
+                    voador.CurrentFrameAtaq += 1;
+                    player.Vida -= 0.5;
+                    if(voador.CurrentFrameAtaq >= 4){
+                      voadorAtaca = false;
+                      voador.CurrentFrameAtaq = 0;
+                    }
+                  }
+                }
+                voador.CurrentFrame = voador.CurrentFrame % 4;
+              
+                if(voadorAtaca){
+                  estadoVoador = 2;
+                  ColorPlayer = DARKGREEN;
+                  voador.FrameRec = (Rectangle) {voador.Width *  voador.CurrentFrameAtaq, voador.Height * estadoVoador, voador.Width, voador.Height};
+                }
+                else if(!voadorAtaca){
+                  estadoVoador = 1;
+                  voador.FrameRec = (Rectangle) {voador.Width *  voador.CurrentFrame, voador.Height * estadoVoador, voador.Width, voador.Height};
+                  //ColorPlayer = RAYWHITE;    
+                }
+
+                player.Temp += GetFrameTime();
+                player.CurrentFrame = player.CurrentFrame % 4;
                 //movimentacao do player
                 if(flag > 0 && flag <= 4){
                     ataqueConfirmado = false;
                     ataqueEnemy = false;
                     ataqueMonstro = false;
+                    ataqueVoador = false;
                     Colorboss = RAYWHITE;
                     ColorEnemy = RAYWHITE;
                     ColorMonstro = RAYWHITE;
+                    ColorVoador = RAYWHITE;
 
 
                     if(player.Temp > player.FrameSpeed){
@@ -326,7 +378,7 @@ int main(){
                         player.CurrentFrame += 1;
                     }
                     player.FrameRec  = (Rectangle) { player.Width * player.CurrentFrame , player.Height*(flag-1), player.Width, player.Height};
-                    DrawTextureRec (player.Img,  player.FrameRec , player.Position , RAYWHITE);
+                    DrawTextureRec (player.Img,  player.FrameRec , player.Position , ColorPlayer);
                     aux = player.Height*(flag-1);
 
                 }else{ // player fica parado
@@ -334,11 +386,15 @@ int main(){
                         ataqueConfirmado = false;
                         ataqueEnemy = false;
                         ataqueMonstro = false;
+                        ataqueVoador = false;
+
                         Colorboss = RAYWHITE;
                         ColorEnemy = RAYWHITE;
                         ColorMonstro = RAYWHITE;
+                        ColorVoador = RAYWHITE;
+
                         player.FrameRec  = (Rectangle) { player.Width * 4, aux , player.Width, player.Height};
-                        DrawTextureRec (player.Img,  player.FrameRec , player.Position, RAYWHITE);
+                        DrawTextureRec (player.Img,  player.FrameRec , player.Position, ColorPlayer);
                     
                     }else{
                         if(player.Temp > player.FrameSpeed){
@@ -355,23 +411,22 @@ int main(){
                             ColorEnemy = RED;
                             enemie.Vida -= 0.9;
                         }
-                        
-                        if(!ataqueConfirmado){
-                            Colorboss = RAYWHITE;
-                        }
-                        if(!ataqueEnemy){
-                            ColorEnemy = RAYWHITE;
-                        }
                         if(ataqueMonstro){
                             ColorMonstro = RED;
                             monstro.Vida -= 0.9;
                         }
-                        if(!ataqueMonstro){
-                            ColorMonstro = RAYWHITE;
+                        if(ataqueVoador){
+                            ColorVoador = RED;
+                            voador.Vida -= 0.9;
                         }
+                        
+                        if(!ataqueConfirmado) Colorboss = RAYWHITE;
+                        if(!ataqueEnemy) ColorEnemy = RAYWHITE;
+                        if(!ataqueMonstro)  ColorMonstro = RAYWHITE;
+                        if(!ataqueVoador) ColorVoador = RAYWHITE;
 
                         player.FrameRec = (Rectangle) { player.Width * CurrentFrameAtaq, aux, player.Width, player.Height};
-                        DrawTextureRec(player.Img, player.FrameRec, player.Position, RAYWHITE);
+                        DrawTextureRec(player.Img, player.FrameRec, player.Position, ColorPlayer);
                         //a ideia e que ele passe nessa condicao 3 vezes pra concluir a animacao de ataque, usando as flags p/ isso
                         if(CurrentFrameAtaq > 7){
                             acabou = 1;
@@ -380,32 +435,39 @@ int main(){
                     }
                 }
 
+                DrawTextureRec(voador.Img, voador.FrameRec, voador.Position, ColorVoador);
                 DrawTextureRec(monstro.Img, monstro.FrameRec, monstro.Position, ColorMonstro);
+
                 //vamos ver se o monstro tbm n morreu pra fazer a animacao
                 if(monstro.Vida <= 0){
+                    monstroAtaca = false;
                     estadoMonstro = 3;
                     monstro.Temp = 0;
                     monstro.CurrentFrame = 0;
                     //boss.FrameSpeed = 8;
 
                     while(monstro.CurrentFrame !=5){
-                    monstro.Temp += GetFrameTime();
-                    if(monstro.Temp > monstro.FrameSpeed){
-                        monstro.Temp = 0;
-                        monstro.CurrentFrame += 1;
-                
-                    }
-                    monstro.FrameRec = (Rectangle) {monstro.Width *  monstro.CurrentFrame, monstro.Height * estadoMonstro, monstro.Width, monstro.Height};
-                    DrawTextureRec(monstro.Img, monstro.FrameRec, monstro.Position, ColorMonstro); 
-                    //WaitTime(10);
+                        monstro.Temp += GetFrameTime();
+                        if(monstro.Temp > monstro.FrameSpeed){
+                            monstro.Temp = 0;
+                            monstro.CurrentFrame += 1;
+                    
+                        }
+                        monstro.FrameRec = (Rectangle) {monstro.Width *  monstro.CurrentFrame, monstro.Height * estadoMonstro, monstro.Width, monstro.Height};
+                        DrawTextureRec(monstro.Img, monstro.FrameRec, monstro.Position, ColorMonstro); 
+                        //WaitTime(10);
                     }
                     monstro.Position = (Vector2) {12000.0, 12000.0};
                     monstro.Collision = (Rectangle) {12000.0, 12000.0, 1.0, 1.0};
+                    monstroMorreu = true;
+                    ColorPlayer = RAYWHITE;
                     //UnloadTexture(monstro.Img);
                 }  
                 DrawTextureRec (enemie.Img, enemie.FrameRec, enemie.Position, ColorEnemy);
+                
                 //vendo se o enemie n morreu pra poder fazer a animacao de morte
                 if(enemie.Vida <= 0){
+                    enemyAtaca = false;
                     estadoEnemy = 5;
                     enemie.Temp = 0;
                     enemie.CurrentFrame = 0;
@@ -423,7 +485,33 @@ int main(){
                     }
                     enemie.Position = (Vector2) {12000.0, 12000.0};
                     enemie.Collision = (Rectangle) {12000.0, 12000.0, 1.0, 1.0};
+                    enemieMorreu = true;
+                    ColorPlayer = RAYWHITE;
                     //UnloadTexture(enemie.Img);
+                }
+
+                if(voador.Vida<=0){
+                    voadorAtaca = false;
+                    estadoVoador = 3;
+                    voador.Temp = 0;
+                    voador.CurrentFrame = 0;
+                    //boss.FrameSpeed = 8;
+                    while(voador.CurrentFrame !=5){
+                        voador.Temp += GetFrameTime();
+                        if(voador.Temp > voador.FrameSpeed){
+                        voador.Temp = 0;
+                        voador.CurrentFrame += 1;
+
+                        }
+                        voador.FrameRec = (Rectangle) {voador.Width *  voador.CurrentFrame, voador.Height * estadoVoador, voador.Width, voador.Height};
+                        DrawTextureRec(voador.Img, voador.FrameRec, voador.Position, ColorVoador); 
+
+                        }
+                    voador.Position = (Vector2) {12000.0, 12000.0};
+                    voador.Collision = (Rectangle) {12000.0, 12000.0, 1.0, 1.0};
+                    voadorMorreu = true;
+                    ColorPlayer = RAYWHITE;
+                    //UnloadTexture(enemie.Img);    
                 }
 
                 Color colorVida = RAYWHITE;
@@ -446,29 +534,32 @@ int main(){
                     currentLife = 5;
                 }
                 else{
-                    colorVida = WHITE;
+                    colorVida = RAYWHITE;
                 }
                 rec = (Rectangle) { 0.0, lifeHeight * currentLife, lifeWidth, lifeHeight};
-                DrawTextureRec (imglife, rec , posicaoVida, colorVida);
-	
+                DrawTxtureRec (imglife, rec , posicaoVida, colorVida);
+                //DrawRectangle(830, 40, player.Vida, 30, RED);
+
+                if(player.Vida <= 0) tela_gameover = 1;
+                else if(monstroMorreu && enemieMorreu && bossMorreu && voadorMorreu) tela_gamewin = 1;
                 if(IsKeyPressed(KEY_ENTER)) jogo_pausado = 1;
             EndDrawing();
         
-            while(jogo_pausado){
-                BeginDrawing();
-                    ClearBackground(BLACK);
-                    DrawTexture(pause, 0, 0, WHITE);
-                    if(IsKeyPressed(KEY_ENTER)) jogo_pausado = 0;
-                EndDrawing();
-            }
+            paused();
+            gameover();
+            gamewin();
+
             if(IsKeyPressed(KEY_SPACE)) stopTelaInicial = 0; //volta p telaInicial
             
         }
     }
 
     terminar();
+    terminarPersonagens();
     UnloadTexture(coxinhas[0].Img);
     UnloadTexture(coxinhas[1].Img);
     UnloadTexture(coxinhas[2].Img);
+    
+    
     return 0;
 }
