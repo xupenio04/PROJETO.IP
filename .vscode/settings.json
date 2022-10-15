@@ -1,0 +1,8 @@
+{
+    "C_Cpp.errorSquiggles": "Disabled",
+    "files.associations": {
+        "variaveis.h": "c",
+        "colisao.h": "c",
+        "raylib.h": "c"
+    }
+}
