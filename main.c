@@ -534,7 +534,7 @@ int main(){
                     colorVida = RAYWHITE;
                 }
                 rec = (Rectangle) { 0.0, lifeHeight * currentLife, lifeWidth, lifeHeight};
-                DrawTxtureRec (imglife, rec , posicaoVida, colorVida);
+                DrawTextureRec (imglife, rec , posicaoVida, colorVida);
                 //DrawRectangle(830, 40, player.Vida, 30, RED);
 
                 if(player.Vida <= 0) tela_gameover = 1;
