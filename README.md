@@ -1,2 +1,3 @@
 # PROJETO.IP
-Jogo : Não seja reprovado. 
+Projeto da Cadeira de IP - CIn UFPE
+Jogo : Não seja reprovado.
