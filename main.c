@@ -39,12 +39,10 @@ int main(){
         mouse_move = GetMousePosition();
         Rectangle mouse_aux = {mouse_move.x, mouse_move.y, 20, 20};
         mouse = mouse_aux;
-
-        BeginDrawing();
-            //abrindo tela inicial
-            if(!stopTelaInicial) {
-                abrirTelaInicial();
-            }
+        
+        //abrindo tela inicial
+        BeginDrawing();   
+            if(!stopTelaInicial) abrirTelaInicial();
             checaBotao();
         EndDrawing();
 
@@ -53,7 +51,6 @@ int main(){
         //abrindo jogo
         if(click_start && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) abrePreJogo();
         
-    
         //mapa do jogo
         while(stopTelaInicial && !jogo_pausado && !tela_gameover && !tela_gamewin){
             BeginDrawing();
